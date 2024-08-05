@@ -1,34 +1,42 @@
-import pandas as pd
+import re
+import os
 import json
+import pandas as pd
 from pathlib import Path
-from collections import Counter
-import datetime
+import numpy as np
+import modelop.utils as utils
 
 
-import modelop_sdk.apis.model_manage_api as mm_api
-import modelop_sdk.restclient.moc_client as moc_client
+#import modelop_sdk.restclient.moc_client as moc_client
 
 
 
-#modelop.init
-def init(job_json):
-    global JOB
+# modelop.init
+def init(init_param):
     global DEPLOYABLE_MODEL
-    job = json.loads(job_json["rawJson"])
-    DEPLOYABLE_MODEL = job.get("referenceModel", None)
-    JOB = job_json
 
-def metrics(df:pd.DataFrame):
-    client = moc_client.MOCClient()    
+    job = json.loads(init_param["rawJson"])
+    
+    # Get the deployable model we are targeting
+    DEPLOYABLE_MODEL = job.get('referenceModel', {})
+    print(DEPLOYABLE_MODEL.get("id"))
+    if not DEPLOYABLE_MODEL:
+        raise ValueError('You must provide a reference model for this job of the model to pull the test results from')
+    
+    logger = utils.configure_logger()
 
-    #STORED_MODEL_ID = DEPLOYABLE_MODEL.get("storedModel").get("id", "ID ERROR")
+
+#modelop.metrics
+def metrics(data: pd.DataFrame):
+    print("Running the metrics function") 
     opm={}
+
+    logger = utils.configure_logger()    
     opm["opm"]=""
     assets=DEPLOYABLE_MODEL.get("storedModel").get("modelAssets")
     for asset in assets:
         if 'TAG1' in asset["metaData"]["tags"]:
             opm["opm"]=True
-
     yield opm   
 
 def main():
