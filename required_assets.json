@@ -1,0 +1,9 @@
+[
+    {
+        "usage": "INPUT_ASSET",
+        "assetRole": "BASELINE_DATA",
+        "metaData": {
+            "description": "we are not actually going to use it!"
+        }
+    }
+]
