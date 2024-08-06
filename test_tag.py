@@ -32,12 +32,14 @@ def metrics(data: pd.DataFrame):
     opm={}
 
     logger = utils.configure_logger()    
-    opm["opm"]=""
+    opm["opm"]=0
+    pattern="OPM_202._Q."
     assets=DEPLOYABLE_MODEL.get("storedModel").get("modelAssets")
     for asset in assets:
-        if 'TAG1' in asset["metaData"]["tags"]:
-            opm["opm"]=True
-    yield opm   
+        tags_list=asset["metaData"]["tags"]
+        if any(re.search(pattern, tag) for tag in tags_list):
+            opm["opm"]=1
+        yield opm   
 
 def main():
     raw_json=Path('example_job.json').read_text()
